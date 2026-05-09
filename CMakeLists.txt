@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
+
 project(ADLplug-AE VERSION 0.0.2)
+
+# Ensure Unicode support for MSVC (required by fmt)
+if(MSVC)
+        add_compile_options(/utf-8)
+        add_compile_definitions(NOMINMAX)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
