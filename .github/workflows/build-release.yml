@@ -15,6 +15,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Setup MSVC
         uses: microsoft/setup-msbuild@v2
@@ -50,6 +56,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Setup MSVC
         uses: microsoft/setup-msbuild@v2
@@ -85,6 +97,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64
@@ -119,6 +137,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
@@ -153,6 +177,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Install Dependencies
         run: |
@@ -203,26 +233,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Apply ADLplug-AE Patch
+        run: |
+          cd external/ADLplug
+          git apply ../../adlplug-ae.patch
+          cd ../..
       
       - name: Install ARM64 Cross-Compilation Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            gcc-aarch64-linux-gnu \
-            g++-aarch64-linux-gnu \
-            libasound2-dev:arm64 \
-            libjack-jackd2-dev:arm64 \
-            libfreetype6-dev:arm64 \
-            libx11-dev:arm64 \
-            libxcomposite-dev:arm64 \
-            libxcursor-dev:arm64 \
-            libxext-dev:arm64 \
-            libxinerama-dev:arm64 \
-            libxrandr-dev:arm64 \
-            libxrender-dev:arm64 \
-            libwebkit2gtk-4.1-dev:arm64 \
-            libglu1-mesa-dev:arm64 \
-            mesa-common-dev:arm64
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
       
       - name: Configure CMake
         run: |
@@ -231,7 +252,8 @@ jobs:
             -DCMAKE_SYSTEM_NAME=Linux \
             -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
             -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
-            -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++
+            -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
+            -DADLplug_LV2=OFF
       
       - name: Build Release
         run: cmake --build build --config Release
