@@ -55,7 +55,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
       
       - name: Configure CMake
-        run: cmake -B build -G "Visual Studio 17 2022" -A ARM64
+        run: cmake -B build -G "Visual Studio 17 2022" -A ARM64 -DADLplug_LV2=OFF
       
       - name: Build Release
         run: cmake --build build --config Release
@@ -80,7 +80,7 @@ jobs:
           path: ADLplug-AE-Windows-ARM64.zip
 
   build-macos-x64:
-    runs-on: macos-13
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
         with:
@@ -114,7 +114,7 @@ jobs:
           path: ADLplug-AE-macOS-x64.tar.gz
 
   build-macos-arm64:
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
         with:
@@ -168,7 +168,7 @@ jobs:
             libxinerama-dev \
             libxrandr-dev \
             libxrender-dev \
-            libwebkit2gtk-4.0-dev \
+            libwebkit2gtk-4.1-dev \
             libglu1-mesa-dev \
             mesa-common-dev
       
@@ -220,7 +220,7 @@ jobs:
             libxinerama-dev:arm64 \
             libxrandr-dev:arm64 \
             libxrender-dev:arm64 \
-            libwebkit2gtk-4.0-dev:arm64 \
+            libwebkit2gtk-4.1-dev:arm64 \
             libglu1-mesa-dev:arm64 \
             mesa-common-dev:arm64
       
