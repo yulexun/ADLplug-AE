@@ -1,0 +1,281 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - 'ci-test'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup MSVC
+        uses: microsoft/setup-msbuild@v2
+      
+      - name: Configure CMake
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir release
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\VST3\ADLplug-AE.vst3" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\VST3\OPNplug-AE.vst3" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\CLAP\ADLplug-AE.clap" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\CLAP\OPNplug-AE.clap" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\LV2\ADLplug-AE.lv2" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\LV2\OPNplug-AE.lv2" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\Standalone\ADLplug-AE.exe" -Destination "release\" -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\Standalone\OPNplug-AE.exe" -Destination "release\" -ErrorAction SilentlyContinue
+          Compress-Archive -Path "release\*" -DestinationPath "ADLplug-AE-Windows-x64.zip"
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: ADLplug-AE-Windows-x64.zip
+
+  build-windows-arm64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup MSVC
+        uses: microsoft/setup-msbuild@v2
+      
+      - name: Configure CMake
+        run: cmake -B build -G "Visual Studio 17 2022" -A ARM64
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir release
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\VST3\ADLplug-AE.vst3" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\VST3\OPNplug-AE.vst3" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\CLAP\ADLplug-AE.clap" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\CLAP\OPNplug-AE.clap" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\LV2\ADLplug-AE.lv2" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\LV2\OPNplug-AE.lv2" -Destination "release\" -Recurse -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\ADLplug-AE_artefacts\Release\Standalone\ADLplug-AE.exe" -Destination "release\" -ErrorAction SilentlyContinue
+          Copy-Item -Path "build\OPNplug-AE_artefacts\Release\Standalone\OPNplug-AE.exe" -Destination "release\" -ErrorAction SilentlyContinue
+          Compress-Archive -Path "release\*" -DestinationPath "ADLplug-AE-Windows-ARM64.zip"
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm64
+          path: ADLplug-AE-Windows-ARM64.zip
+
+  build-macos-x64:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir -p release
+          cp -r build/ADLplug-AE_artefacts/Release/VST3/ADLplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/VST3/OPNplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/CLAP/ADLplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/CLAP/OPNplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/AU/ADLplug-AE.component release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/AU/OPNplug-AE.component release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/LV2/ADLplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/LV2/OPNplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/Standalone/ADLplug-AE.app release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/Standalone/OPNplug-AE.app release/ 2>/dev/null || true
+          tar -czf ADLplug-AE-macOS-x64.tar.gz -C release .
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: ADLplug-AE-macOS-x64.tar.gz
+
+  build-macos-arm64:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir -p release
+          cp -r build/ADLplug-AE_artefacts/Release/VST3/ADLplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/VST3/OPNplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/CLAP/ADLplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/CLAP/OPNplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/AU/ADLplug-AE.component release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/AU/OPNplug-AE.component release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/LV2/ADLplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/LV2/OPNplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/Standalone/ADLplug-AE.app release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/Standalone/OPNplug-AE.app release/ 2>/dev/null || true
+          tar -czf ADLplug-AE-macOS-arm64.tar.gz -C release .
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: ADLplug-AE-macOS-arm64.tar.gz
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev \
+            libjack-jackd2-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxext-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libwebkit2gtk-4.0-dev \
+            libglu1-mesa-dev \
+            mesa-common-dev
+      
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir -p release
+          cp -r build/ADLplug-AE_artefacts/Release/VST3/ADLplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/VST3/OPNplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/CLAP/ADLplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/CLAP/OPNplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/LV2/ADLplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/LV2/OPNplug-AE.lv2 release/ 2>/dev/null || true
+          cp build/ADLplug-AE_artefacts/Release/Standalone/ADLplug-AE release/ 2>/dev/null || true
+          cp build/OPNplug-AE_artefacts/Release/Standalone/OPNplug-AE release/ 2>/dev/null || true
+          tar -czf ADLplug-AE-Linux-x64.tar.gz -C release .
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: ADLplug-AE-Linux-x64.tar.gz
+
+  build-linux-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Install ARM64 Cross-Compilation Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-aarch64-linux-gnu \
+            g++-aarch64-linux-gnu \
+            libasound2-dev:arm64 \
+            libjack-jackd2-dev:arm64 \
+            libfreetype6-dev:arm64 \
+            libx11-dev:arm64 \
+            libxcomposite-dev:arm64 \
+            libxcursor-dev:arm64 \
+            libxext-dev:arm64 \
+            libxinerama-dev:arm64 \
+            libxrandr-dev:arm64 \
+            libxrender-dev:arm64 \
+            libwebkit2gtk-4.0-dev:arm64 \
+            libglu1-mesa-dev:arm64 \
+            mesa-common-dev:arm64
+      
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_SYSTEM_NAME=Linux \
+            -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+            -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
+            -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++
+      
+      - name: Build Release
+        run: cmake --build build --config Release
+      
+      - name: Package Artifacts
+        run: |
+          mkdir -p release
+          cp -r build/ADLplug-AE_artefacts/Release/VST3/ADLplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/VST3/OPNplug-AE.vst3 release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/CLAP/ADLplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/CLAP/OPNplug-AE.clap release/ 2>/dev/null || true
+          cp -r build/ADLplug-AE_artefacts/Release/LV2/ADLplug-AE.lv2 release/ 2>/dev/null || true
+          cp -r build/OPNplug-AE_artefacts/Release/LV2/OPNplug-AE.lv2 release/ 2>/dev/null || true
+          cp build/ADLplug-AE_artefacts/Release/Standalone/ADLplug-AE release/ 2>/dev/null || true
+          cp build/OPNplug-AE_artefacts/Release/Standalone/OPNplug-AE release/ 2>/dev/null || true
+          tar -czf ADLplug-AE-Linux-ARM64.tar.gz -C release .
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64
+          path: ADLplug-AE-Linux-ARM64.tar.gz
+
+  create-release:
+    needs: [build-windows, build-windows-arm64, build-macos-x64, build-macos-arm64, build-linux, build-linux-arm64]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/windows-x64/ADLplug-AE-Windows-x64.zip
+            artifacts/windows-arm64/ADLplug-AE-Windows-ARM64.zip
+            artifacts/macos-x64/ADLplug-AE-macOS-x64.tar.gz
+            artifacts/macos-arm64/ADLplug-AE-macOS-arm64.tar.gz
+            artifacts/linux-x64/ADLplug-AE-Linux-x64.tar.gz
+            artifacts/linux-arm64/ADLplug-AE-Linux-ARM64.tar.gz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
